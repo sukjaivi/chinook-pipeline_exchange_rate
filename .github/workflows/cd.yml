@@ -1,0 +1,29 @@
+name: CD for chinook pipeline
+on: 
+  push:
+    branches: [main]
+jobs:
+  push_to_databricks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+      - name: Databricks CLI config
+        run: |
+            pip install databricks-cli
+            cat > ~/.databrickscfg << EOF
+            [DEFAULT]
+            host = ${{ secrets.DATABRICKS_HOST_URL }}
+            token = ${{ secrets.DATABRICKS_TOKEN }}
+            jobs-api-version = 2.1
+            EOF
+      - name: Deploy code to databricks workspace
+        run: |
+            databricks workspace import "pipeline_exchange_rate.py" "/Workspace/Users/sukjaivi@ais.co.th/prod_exchange_rate/pipeline_exchange_rate" --language python --overwrite
+      - name: Run production job
+        run: |
+            databricks jobs run-now --job-id 1023528086494454
