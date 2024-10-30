@@ -19,7 +19,7 @@ outputPath = config.get('DEFAULT', 'OUTPUT_PATH')
 tracks = pd.read_csv(inputPath)
 
 # Transform
-tracks["UnitPrice"] = tracks["UnitPrice"].apply(lambda x: round(x * 33.77, 2))
+tracks["UnitPrice"] = tracks["UnitPrice"].apply(lambda x: x * 33.77)
                              
 # Load
 tracks.to_csv(outputPath, index=False)
